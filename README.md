@@ -9,7 +9,7 @@ This is a really simple script to scrape a saved cart from GSA Advantage.
 
 ## Installation
 
-- `pip install requirements.txt`
+- `pip install -r requirements.txt`
 - `python gsa-advantage.py`
 
 ## Other Usage
