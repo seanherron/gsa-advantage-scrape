@@ -1,16 +1,22 @@
+import getpass
+
 import requests
 from bs4 import BeautifulSoup
 
 # Temporarily Get User Credentials, you'll probably want to pass these some other way
 
 username = raw_input("Enter GSA Advantage Username: ")
-password = raw_input("Enter GSA Advantage Password: ")
+password = getpass.getpass("Enter GSA Advantage Password: ")
 cart_number = raw_input("Enter the Cart Number you wish to display: ")
 
 # Set some other things, like the login url for GSA Advantage
-gsa_login_url = "https://www.gsaadvantage.gov/advantage/main/login.do"
-gsa_login_post_url = "https://www.gsaadvantage.gov/advantage/main/login_in.do"
-gsa_retrieve_cart_url = "https://www.gsaadvantage.gov/advantage/parkcart/retrieve_parkcart.do"
+root_url = "https://www.gsaadvantage.gov"
+login_url = "%s/advantage/main/login.do" % root_url
+login_post_url = "%s/advantage/main/login_in.do" % root_url
+retrieve_cart_url = "%s/advantage/parkcart/retrieve_parkcart.do" % root_url
+
+# Give the user some peace of mind
+print "Looking for your record!"
 
 
 # We'll use requests to login and get to the cart page
@@ -18,7 +24,7 @@ s = requests.Session()
 
 # Quick script to get the token of the session so that we can login
 def token_get(s):
-  page = s.get(gsa_login_url).text
+  page = s.get(login_url).text
   soup = BeautifulSoup(page)
   #print soup.title
   token_tag = soup.find('input', attrs={'name':'org.apache.struts.taglib.html.TOKEN', 'type':'hidden'})
@@ -36,7 +42,7 @@ login_payload = {
 }
 
 # We'll login now
-s.post(gsa_login_post_url, data=login_payload)
+s.post(login_post_url, data=login_payload)
 
 
 # We'll now get the content of the cart
@@ -46,7 +52,7 @@ cart_payload = {
   'retrieveCart': "true"
 }
 
-cart_page = s.post(gsa_retrieve_cart_url, data=cart_payload).text
+cart_page = s.post(retrieve_cart_url, data=cart_payload).text
 soup = BeautifulSoup(cart_page)
 product_table = soup.find('table', attrs={'class':'sectionpanel4'}).find('table', attrs={'class':'greybox'}).find_all('tr')
 
